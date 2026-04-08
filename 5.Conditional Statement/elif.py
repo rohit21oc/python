@@ -6,4 +6,4 @@ if(num1>num2):
 elif(num2>num1):
     print("Num2 is grater than num1")
 else:
-    print("both number are equal")
+    print("both number are equal") 
