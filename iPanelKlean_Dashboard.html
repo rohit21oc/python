@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>iPanelKlean nA2 — MIS Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green-deep: #0a2e1a;
+    --green-dark: #0d3d20;
+    --green-mid: #165c30;
+    --green-bright: #1db954;
+    --green-light: #4ade80;
+    --green-glow: #86efac;
+    --solar-gold: #f59e0b;
+    --solar-amber: #fbbf24;
+    --solar-pale: #fef3c7;
+    --white: #ffffff;
+    --text-dim: rgba(255,255,255,0.5);
+    --text-muted: rgba(255,255,255,0.3);
+    --card-bg: rgba(255,255,255,0.04);
+    --card-border: rgba(74,222,128,0.15);
+    --card-hover: rgba(255,255,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--green-deep);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND ── */
+  .bg-layer {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    overflow: hidden;
+  }
+
+  .sun {
+    position: absolute;
+    top: -120px; right: -80px;
+    width: 420px; height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(251,191,36,0.18) 0%, rgba(245,158,11,0.08) 40%, transparent 70%);
+  }
+
+  .sun-ring {
+    position: absolute;
+    top: -80px; right: -40px;
+    width: 340px; height: 340px;
+    border-radius: 50%;
+    border: 1px solid rgba(251,191,36,0.12);
+    animation: pulse-ring 4s ease-in-out infinite;
+  }
+  .sun-ring:nth-child(3) { width: 460px; height: 460px; top: -140px; right: -100px; animation-delay: 1.5s; }
+  .sun-ring:nth-child(4) { width: 580px; height: 580px; top: -200px; right: -160px; animation-delay: 3s; }
+
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 0.15; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.02); }
+  }
+
+  .grid-lines {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(29,185,84,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(29,185,84,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .ground-glow {
+    position: absolute;
+    bottom: -100px; left: 50%;
+    transform: translateX(-50%);
+    width: 900px; height: 300px;
+    background: radial-gradient(ellipse, rgba(29,185,84,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  /* ── LAYOUT ── */
+  .wrapper {
+    position: relative; z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 28px 60px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 0 18px;
+    border-bottom: 1px solid rgba(74,222,128,0.12);
+    margin-bottom: 36px;
+  }
+
+  .logo-wrap { display: flex; align-items: center; gap: 16px; }
+
+  .logo-badge {
+    width: 50px; height: 50px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #1db954, #0a6628);
+    border: 1px solid rgba(74,222,128,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 12px; font-weight: 800;
+    color: white; letter-spacing: -0.5px;
+    box-shadow: 0 0 28px rgba(29,185,84,0.35), 0 4px 16px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+  }
+  .logo-badge::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%);
+    animation: shimmer 3s infinite;
+  }
+  @keyframes shimmer { 0%{transform:translateX(-100%) translateY(-100%)} 100%{transform:translateX(100%) translateY(100%)} }
+
+  .brand h1 {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 20px; font-weight: 800;
+    color: white; letter-spacing: 0.5px;
+  }
+  .brand p {
+    font-size: 11px; color: var(--green-light);
+    letter-spacing: 3px; text-transform: uppercase;
+    margin-top: 2px; font-weight: 500;
+  }
+
+  .header-right { display: flex; align-items: center; gap: 16px; }
+
+  .status-pill {
+    display: flex; align-items: center; gap: 7px;
+    background: rgba(29,185,84,0.1);
+    border: 1px solid rgba(29,185,84,0.3);
+    border-radius: 50px;
+    padding: 6px 14px;
+    font-size: 11px; font-weight: 600;
+    color: var(--green-light); letter-spacing: 1px;
+  }
+  .pulse-dot {
+    width: 7px; height: 7px;
+    background: var(--green-bright);
+    border-radius: 50%;
+    animation: blink 1.4s infinite;
+    box-shadow: 0 0 6px var(--green-bright);
+  }
+  @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.8)} }
+
+  .date-chip {
+    font-size: 12px; color: var(--text-dim);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 6px 12px;
+  }
+
+  /* ── HERO INTRO ── */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 28px;
+    margin-bottom: 36px;
+    align-items: center;
+  }
+
+  .hero-text h2 {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 32px; font-weight: 800;
+    line-height: 1.2;
+    background: linear-gradient(135deg, #fff 30%, var(--green-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 14px;
+  }
+  .hero-text p {
+    font-size: 14px; color: var(--text-dim);
+    line-height: 1.8; font-weight: 300;
+    max-width: 520px;
+  }
+
+  .hero-tags { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .tag {
+    font-size: 11px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+  .tag-green { background: rgba(29,185,84,0.15); color: var(--green-light); border: 1px solid rgba(29,185,84,0.3); }
+  .tag-gold { background: rgba(245,158,11,0.15); color: var(--solar-amber); border: 1px solid rgba(245,158,11,0.3); }
+
+  /* Solar panel illustration */
+  .solar-art {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(74,222,128,0.12);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .solar-art::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 30%, rgba(251,191,36,0.08) 0%, transparent 60%);
+  }
+  .panel-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 44px);
+    grid-template-rows: repeat(3, 30px);
+    gap: 4px;
+    position: relative; z-index: 1;
+  }
+  .panel-cell {
+    background: linear-gradient(135deg, #0d3d20 0%, #165c30 50%, #0d3d20 100%);
+    border: 1px solid rgba(74,222,128,0.25);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    animation: solar-glow 3s ease-in-out infinite;
+  }
+  .panel-cell:nth-child(odd) { animation-delay: 0.5s; }
+  .panel-cell:nth-child(3n) { animation-delay: 1s; }
+  @keyframes solar-glow {
+    0%,100%{background: linear-gradient(135deg, #0d3d20 0%, #165c30 50%, #0d3d20 100%);}
+    50%{background: linear-gradient(135deg, #165c30 0%, #1db954 50%, #0a6628 100%);}
+  }
+  .panel-cell::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(251,191,36,0.1) 50%, transparent 70%);
+    animation: shine 2.5s linear infinite;
+  }
+  @keyframes shine { 0%{transform:translateX(-200%)} 100%{transform:translateX(200%)} }
+
+  .power-reading {
+    margin-top: 16px;
+    text-align: center;
+    font-family: 'Exo 2', sans-serif;
+  }
+  .power-num {
+    font-size: 28px; font-weight: 800;
+    color: var(--solar-amber);
+    text-shadow: 0 0 20px rgba(251,191,36,0.4);
+  }
+  .power-label { font-size: 11px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+
+  /* ── STATS ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 20px 20px 18px;
+    position: relative; overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+  .stat-card:hover {
+    background: var(--card-hover);
+    border-color: rgba(74,222,128,0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(74,222,128,0.1);
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--c, #1db954), transparent);
+  }
+
+  .stat-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    margin-bottom: 14px;
+    background: rgba(255,255,255,0.06);
+  }
+  .stat-num {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 30px; font-weight: 800;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label {
+    font-size: 12px; color: var(--text-dim);
+    letter-spacing: 0.5px; font-weight: 400;
+  }
+  .stat-trend {
+    margin-top: 10px;
+    font-size: 11px;
+    display: flex; align-items: center; gap: 4px;
+    color: var(--green-light);
+    font-weight: 500;
+  }
+
+  /* ── SECTION HEADING ── */
+  .section-head {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 20px;
+  }
+  .section-head h3 {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--green-light);
+    letter-spacing: 3px; text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .section-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(74,222,128,0.25), transparent);
+  }
+  .section-count {
+    font-size: 11px; color: var(--text-muted);
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px; padding: 3px 10px;
+  }
+
+  /* ── MODULE CARDS ── */
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+    gap: 14px;
+    margin-bottom: 44px;
+  }
+
+  .mod-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 22px 16px 18px;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative; overflow: hidden;
+    animation: rise 0.5s ease both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .mod-card:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: var(--mc, rgba(74,222,128,0.5));
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.35), 0 0 20px var(--mg, rgba(29,185,84,0.15));
+  }
+
+  .mod-card::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--mc, #1db954), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .mod-card:hover::after { opacity: 1; }
+
+  .mod-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, var(--mg, rgba(29,185,84,0.08)) 0%, transparent 60%);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .mod-card:hover::before { opacity: 1; }
+
+  .mod-icon-wrap {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    margin: 0 auto 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .mod-card:hover .mod-icon-wrap {
+    border-color: var(--mc, rgba(74,222,128,0.4));
+    box-shadow: 0 0 20px var(--mg, rgba(29,185,84,0.2));
+  }
+
+  .mod-name {
+    font-size: 13px; font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.3; margin-bottom: 5px;
+    letter-spacing: 0.2px;
+  }
+  .mod-cat {
+    font-size: 10px; color: var(--text-muted);
+    letter-spacing: 1.5px; text-transform: uppercase;
+  }
+  .mod-arrow {
+    position: absolute; top: 12px; right: 12px;
+    font-size: 12px; color: var(--text-muted);
+    opacity: 0; transition: all 0.3s;
+    transform: translateX(-4px);
+  }
+  .mod-card:hover .mod-arrow {
+    opacity: 1; transform: translateX(0);
+    color: var(--mc, #1db954);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 24px 0 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 12px; color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+  footer span { color: var(--green-bright); }
+</style>
+</head>
+<body>
+
+<div class="bg-layer">
+  <div class="sun"></div>
+  <div class="sun-ring"></div>
+  <div class="sun-ring"></div>
+  <div class="sun-ring"></div>
+  <div class="grid-lines"></div>
+  <div class="ground-glow"></div>
+</div>
+
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-wrap">
+      <div class="logo-badge">iPK</div>
+      <div class="brand">
+        <h1>iPanelKlean <span style="color:var(--green-light);font-size:14px">nA2</span></h1>
+        <p>MIS Dashboard</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="date-chip" id="dateChip">—</div>
+      <div class="status-pill">
+        <div class="pulse-dot"></div>
+        System Active
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-text">
+      <h2>Waterless Solar<br/>Self-Cleaning System</h2>
+      <p>Patented technology that makes solar panels slippery by special coatings, then blows them clean using compressed air multiple times a day — increasing power generation anywhere from 30% to 100%, completely automatic and brushless.</p>
+      <div class="hero-tags">
+        <span class="tag tag-green">✦ Automatic</span>
+        <span class="tag tag-green">✦ Waterless</span>
+        <span class="tag tag-green">✦ Brushless</span>
+        <span class="tag tag-gold">☀ −40% Payback Period</span>
+        <span class="tag tag-gold">☀ No Moving Parts</span>
+      </div>
+    </div>
+    <div class="solar-art">
+      <div>
+        <div class="panel-grid" id="panelGrid"></div>
+        <div class="power-reading">
+          <div class="power-num">+<span id="powerCount">0</span>%</div>
+          <div class="power-label">Power Generation Boost</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card" style="--c:#f59e0b">
+      <div class="stat-icon" style="color:#f59e0b">☀</div>
+      <div class="stat-num" style="color:#f59e0b">+100%</div>
+      <div class="stat-label">Max Power Boost</div>
+      <div class="stat-trend">↑ Above industry average</div>
+    </div>
+    <div class="stat-card" style="--c:#4ade80">
+      <div class="stat-icon" style="color:#4ade80">⟳</div>
+      <div class="stat-num" style="color:#4ade80">−40%</div>
+      <div class="stat-label">Payback Period</div>
+      <div class="stat-trend">↑ Faster ROI</div>
+    </div>
+    <div class="stat-card" style="--c:#60a5fa">
+      <div class="stat-icon" style="color:#60a5fa">◈</div>
+      <div class="stat-num" style="color:#60a5fa">15</div>
+      <div class="stat-label">Active Modules</div>
+      <div class="stat-trend" style="color:#60a5fa">● All systems running</div>
+    </div>
+    <div class="stat-card" style="--c:#a78bfa">
+      <div class="stat-icon" style="color:#a78bfa">◎</div>
+      <div class="stat-num" style="color:#a78bfa">0 L</div>
+      <div class="stat-label">Water Used</div>
+      <div class="stat-trend" style="color:#a78bfa">✦ 100% Waterless</div>
+    </div>
+  </div>
+
+  <!-- MODULES ROW 1 -->
+  <div class="section-head">
+    <h3>Management Modules</h3>
+    <div class="section-line"></div>
+    <span class="section-count">6 modules</span>
+  </div>
+
+  <div class="modules-grid" id="row1"></div>
+
+  <!-- MODULES ROW 2 -->
+  <div class="section-head">
+    <h3>Field & Operations</h3>
+    <div class="section-line"></div>
+    <span class="section-count">6 modules</span>
+  </div>
+
+  <div class="modules-grid" id="row2"></div>
+
+  <!-- MODULES ROW 3 -->
+  <div class="section-head">
+    <h3>Finance & Analytics</h3>
+    <div class="section-line"></div>
+    <span class="section-count">3 modules</span>
+  </div>
+
+  <div class="modules-grid" id="row3"></div>
+
+  <footer>
+    Copyright &copy; <span>iPanelKlean</span> 2022. All Rights Reserved. &nbsp;·&nbsp; Powered by nA2 Technology
+  </footer>
+
+</div>
+
+<script>
+  // Date
+  const d = new Date();
+  document.getElementById('dateChip').textContent =
+    d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+
+  // Solar panel cells
+  const pg = document.getElementById('panelGrid');
+  for(let i=0;i<12;i++){
+    const c=document.createElement('div');
+    c.className='panel-cell';
+    c.style.animationDelay=(i*0.18)+'s';
+    pg.appendChild(c);
+  }
+
+  // Counter animation
+  let count=0;
+  const target=100;
+  const interval=setInterval(()=>{
+    count+=2;
+    document.getElementById('powerCount').textContent=count;
+    if(count>=target) clearInterval(interval);
+  },30);
+
+  // Module data
+  const row1 = [
+    { name:"MD Dashboard", cat:"Management", icon:"📊", color:"#4ade80", glow:"rgba(74,222,128,0.15)", link:"#" },
+    { name:"System Master", cat:"Admin", icon:"⚙️", color:"#60a5fa", glow:"rgba(96,165,250,0.15)", link:"#" },
+    { name:"Delegation Sheet", cat:"HR & Teams", icon:"🌿", color:"#34d399", glow:"rgba(52,211,153,0.15)", link:"#" },
+    { name:"Checklist System", cat:"Operations", icon:"✅", color:"#f59e0b", glow:"rgba(245,158,11,0.15)", link:"#" },
+    { name:"Task List", cat:"Productivity", icon:"📋", color:"#a78bfa", glow:"rgba(167,139,250,0.15)", link:"#" },
+    { name:"Lead Referral", cat:"Sales", icon:"🤝", color:"#fb923c", glow:"rgba(251,146,60,0.15)", link:"#" },
+  ];
+
+  const row2 = [
+    { name:"FMS List", cat:"Field Mgmt", icon:"🗺️", color:"#4ade80", glow:"rgba(74,222,128,0.15)", link:"#" },
+    { name:"Purchase FMS", cat:"Procurement", icon:"🛒", color:"#34d399", glow:"rgba(52,211,153,0.15)", link:"#" },
+    { name:"Remote Working FMS", cat:"Remote Ops", icon:"🌐", color:"#60a5fa", glow:"rgba(96,165,250,0.15)", link:"#" },
+    { name:"MIS Scores", cat:"Analytics", icon:"📈", color:"#f59e0b", glow:"rgba(245,158,11,0.15)", link:"#" },
+    { name:"Accounts Dashboard", cat:"Finance", icon:"💰", color:"#fb923c", glow:"rgba(251,146,60,0.15)", link:"#" },
+    { name:"CRM", cat:"Customers", icon:"👥", color:"#a78bfa", glow:"rgba(167,139,250,0.15)", link:"#" },
+  ];
+
+  const row3 = [
+    { name:"PC Dashboard", cat:"Operations", icon:"🖥️", color:"#4ade80", glow:"rgba(74,222,128,0.15)", link:"#" },
+    { name:"EA Dashboard", cat:"Executive", icon:"📉", color:"#f59e0b", glow:"rgba(245,158,11,0.15)", link:"#" },
+    { name:"Tax Invoice FMS", cat:"Finance", icon:"🧾", color:"#60a5fa", glow:"rgba(96,165,250,0.15)", link:"#" },
+  ];
+
+  function buildCards(modules, containerId) {
+    const container = document.getElementById(containerId);
+    modules.forEach((m, i) => {
+      const a = document.createElement('a');
+      a.className = 'mod-card';
+      a.href = m.link;
+      a.style.cssText = `--mc:${m.color}; --mg:${m.glow}; animation-delay:${i * 0.07}s;`;
+      a.innerHTML = `
+        <span class="mod-arrow">↗</span>
+        <div class="mod-icon-wrap">
+          <span style="font-size:26px">${m.icon}</span>
+        </div>
+        <div class="mod-name">${m.name}</div>
+        <div class="mod-cat">${m.cat}</div>
+      `;
+      container.appendChild(a);
+    });
+  }
+
+  buildCards(row1, 'row1');
+  buildCards(row2, 'row2');
+  buildCards(row3, 'row3');
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+python -u "b:\Python\fileHandling\exp1.py"
+jwqhr
+wrgv
+rg 
+rg
+rvfq
